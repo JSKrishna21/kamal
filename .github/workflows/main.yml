@@ -5,21 +5,31 @@ on:
     branches:
       - main
 
-
 jobs:
   build:
     name: Build and analyze
     runs-on: ubuntu-latest
     
     steps:
+      # Step 1: Checkout the code
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0  # Ensures all commit history is available for proper analysis
+
+      # Step 2: Run SonarQube analysis
       - uses: sonarsource/sonarqube-scan-action@v3
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      # If you wish to fail your job when the Quality Gate is red, uncomment the
+
+      # Step 3: Fail the build on Quality Gate failure (optional)
+      # Uncomment the next block if you'd like the workflow to fail when Quality Gate fails
+      # - name: Check the Quality Gate status
+      #   uses: sonarsource/sonarqube-quality-gate-action@v1
+      #   with:
+      #     host-url: ${{ secrets.SONAR_HOST_URL }}
+      #     token: ${{ secrets.SONAR_TOKEN }}
+
       # following lines. This would typically be used to fail a deployment.
       # - uses: sonarsource/sonarqube-quality-gate-action@master
       #   timeout-minutes: 5
